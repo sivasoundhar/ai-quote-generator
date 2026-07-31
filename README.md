@@ -1,1 +1,1 @@
-CI/CD --- Docker
+AI quote generator

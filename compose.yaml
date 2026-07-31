@@ -1,0 +1,15 @@
+services:
+
+  ai-quote-generator:
+
+    build: .
+
+    container_name: ai_quote_generator
+
+    ports:
+      - "8501:8501"
+
+    env_file:
+      - .env
+
+    restart: unless-stopped
