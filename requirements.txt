@@ -1,5 +1,5 @@
-pytest
 streamlit
 groq
 python-dotenv
+reportlab
 pytest

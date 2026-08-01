@@ -1,0 +1,74 @@
+/* Hide Streamlit Menu */
+#MainMenu {
+    visibility: hidden;
+}
+
+footer {
+    visibility: hidden;
+}
+
+header {
+    visibility: hidden;
+}
+
+/* Main App */
+
+.stApp {
+
+    background: #0f172a;
+
+}
+
+/* Sidebar */
+
+section[data-testid="stSidebar"] {
+
+    background: #111827;
+
+}
+
+/* Buttons */
+
+.stButton>button{
+
+    width:100%;
+
+    border-radius:12px;
+
+    height:50px;
+
+    font-size:17px;
+
+    font-weight:bold;
+
+}
+
+/* Metrics */
+
+[data-testid="metric-container"]{
+
+    border-radius:15px;
+
+    padding:18px;
+
+    border:1px solid #374151;
+
+    background:#1f2937;
+
+}
+
+/* Select Box */
+
+.stSelectbox{
+
+    margin-bottom:10px;
+
+}
+
+/* Success */
+
+.stSuccess{
+
+    border-radius:12px;
+
+}

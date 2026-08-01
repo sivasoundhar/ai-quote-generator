@@ -2,21 +2,20 @@ from prompts import build_prompt
 
 
 def test_prompt_returns_string():
-
-    prompt = build_prompt("AI")
-
+    prompt = build_prompt("Artificial Intelligence", "English", "Inspirational")
     assert isinstance(prompt, str)
 
 
 def test_prompt_contains_category():
-
-    prompt = build_prompt("Programming")
-
+    prompt = build_prompt("Programming", "English", "Funny")
     assert "Programming" in prompt
 
 
+def test_prompt_contains_language():
+    prompt = build_prompt("Life", "தமிழ்", "Deep")
+    assert "தமிழ்" in prompt
+
+
 def test_prompt_not_empty():
-
-    prompt = build_prompt("Life")
-
+    prompt = build_prompt("Life", "English", "Short")
     assert len(prompt) > 0

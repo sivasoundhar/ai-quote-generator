@@ -1,96 +1,81 @@
 import streamlit as st
+
+from components.dashboard import render_dashboard
+from components.favorites import render_favorites
+from components.footer import render_footer
+from components.hero import render_hero
+from components.history import add_quote, render_history
+from components.quote_card import render_quote_card
 from components.sidebar import render_sidebar
-
-from constants import (
-    APP_TITLE,
-    CATEGORIES,
-    DEFAULT_MAX_TOKENS,
-    DEFAULT_TEMPERATURE,
-)
-
-from prompts import build_prompt
+from constants import APP_TITLE
 from llm import generate_quote
+from utils.session import initialize_session
+
+# ---------------- Page Config ---------------- #
 
 st.set_page_config(
-    page_title="AI Quote Generator",
+    page_title=APP_TITLE,
     page_icon="🤖",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded",
 )
+
+
+def load_css():
+    try:
+        with open("assets/styles.css", encoding="utf-8") as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    except FileNotFoundError:
+        pass
+
+
+load_css()
+initialize_session()
 
 # ---------------- Sidebar ---------------- #
 
-st.sidebar.title("⚙ Settings")
-
-temperature = st.sidebar.slider(
-    "Creativity",
-    0.0,
-    1.0,
-    DEFAULT_TEMPERATURE,
-)
-
-max_tokens = st.sidebar.slider(
-    "Quote Length",
-    50,
-    200,
-    DEFAULT_MAX_TOKENS,
-)
-
-if st.sidebar.button("🗑 Clear History"):
-    st.session_state.history = []
-
-# ---------------- Session ---------------- #
-
-if "history" not in st.session_state:
-    st.session_state.history = []
+temperature, max_tokens = render_sidebar()
 
 # ---------------- Main ---------------- #
 
-st.title(APP_TITLE)
+render_hero()
 
-st.write("Generate inspiring AI-powered quotes using Groq.")
+category, language, style = render_dashboard()
 
-category = st.selectbox(
-    "Choose a Category",
-    CATEGORIES,
-)
+if st.button("✨ Generate Quote", type="primary", width="stretch"):
+    with st.spinner("🤖 AI is writing your quote..."):
+        try:
+            quote = generate_quote(
+                category=category,
+                language=language,
+                style=style,
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+        except Exception as exc:
+            st.error(f"Failed to generate quote: {exc}")
+            quote = None
 
-if st.button("✨ Generate Quote"):
+    if quote:
+        add_quote(quote, category, language, style)
+        st.session_state.last_quote = quote
+        st.session_state.last_category = category
+        st.session_state.last_language = language
+        st.session_state.last_style = style
+        st.toast("🎉 Quote generated!")
 
-    prompt = build_prompt(category)
+# ---------------- Last Generated Quote ---------------- #
 
-    quote = generate_quote(
-        prompt,
-        temperature,
-        max_tokens,
+if st.session_state.get("last_quote"):
+    render_quote_card(
+        quote=st.session_state.last_quote,
+        category=st.session_state.last_category,
+        language=st.session_state.last_language,
+        style=st.session_state.last_style,
     )
 
-    st.success("Quote Generated Successfully!")
+# ---------------- History & Favorites ---------------- #
 
-    st.text_area(
-        "Generated Quote",
-        quote,
-        height=170,
-    )
-
-    st.download_button(
-        "📥 Download Quote",
-        data=quote,
-        file_name="AI_Quote.txt",
-        mime="text/plain",
-    )
-
-    st.session_state.history.insert(
-        0,
-        f"{category} : {quote}",
-    )
-
-# ---------------- History ---------------- #
-
-if st.session_state.history:
-
-    st.divider()
-
-    st.subheader("🕘 Quote History")
-
-    for item in st.session_state.history:
-        st.write("•", item)
+render_history()
+render_favorites()
+render_footer()
