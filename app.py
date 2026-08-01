@@ -1,4 +1,5 @@
 import streamlit as st
+from components.sidebar import render_sidebar
 
 from constants import (
     APP_TITLE,
@@ -13,7 +14,7 @@ from llm import generate_quote
 st.set_page_config(
     page_title="AI Quote Generator",
     page_icon="🤖",
-    layout="centered",
+    layout="wide"
 )
 
 # ---------------- Sidebar ---------------- #
